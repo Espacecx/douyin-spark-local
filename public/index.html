@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>本机续火助手</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand-mark" aria-hidden="true">🔥</div>
+        <div>
+          <p class="eyebrow">LOCAL · PRIVATE · WINDOWS</p>
+          <h1>本机续火助手</h1>
+          <p class="subtitle">好友由你选择，发送由你授权，结果必须经过验证。</p>
+        </div>
+        <div id="global-state" class="global-state neutral">正在连接</div>
+      </header>
+
+      <section class="notice" aria-labelledby="risk-title">
+        <div class="notice-icon">!</div>
+        <div>
+          <h2 id="risk-title">使用前请确认风险</h2>
+          <p>抖音用户协议限制自动化程序。本工具仅在本机运行，不绕过验证；实际发送默认关闭，账号风险由使用者承担。</p>
+        </div>
+      </section>
+
+      <section class="status-grid" aria-label="运行状态">
+        <article class="status-card">
+          <span class="status-label">浏览器</span>
+          <strong id="browser-state">未启动</strong>
+          <small id="browser-detail">点击“打开登录页”开始</small>
+        </article>
+        <article class="status-card">
+          <span class="status-label">实际发送</span>
+          <strong id="sending-state">已关闭</strong>
+          <small>关闭时只能扫描和预览</small>
+        </article>
+        <article class="status-card">
+          <span class="status-label">每日定时</span>
+          <strong id="schedule-state">未启用</strong>
+          <small id="schedule-detail">等待配置</small>
+        </article>
+        <article class="status-card">
+          <span class="status-label">已选好友</span>
+          <strong id="selected-count">0</strong>
+          <small id="friend-count">尚未扫描</small>
+        </article>
+      </section>
+
+      <section class="workspace-grid">
+        <article class="panel friends-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">STEP 1 · TARGETS</p>
+              <h2>选择好友</h2>
+            </div>
+            <div class="panel-actions">
+              <button id="login-btn" class="button secondary">打开登录页</button>
+              <button id="probe-btn" class="button primary">只读扫描</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <label class="search-field">
+              <span class="sr-only">搜索好友</span>
+              <input id="friend-search" type="search" placeholder="搜索昵称或备注" />
+            </label>
+            <button id="save-selection-btn" class="button ghost">保存选择</button>
+          </div>
+          <div id="friend-list" class="friend-list" aria-live="polite">
+            <div class="empty-state">
+              <span>◎</span>
+              <strong>还没有好友数据</strong>
+              <p>先打开登录页，再执行只读扫描。扫描不会发送消息。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel settings-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">STEP 2 · RULES</p>
+              <h2>发送规则</h2>
+            </div>
+          </div>
+          <form id="settings-form">
+            <label class="field">
+              <span>浏览器</span>
+              <select id="browser-channel" name="browserChannel">
+                <option value="msedge">Microsoft Edge</option>
+                <option value="chrome">Google Chrome</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>消息模板</span>
+              <textarea id="message-template" name="messageTemplate" rows="4"></textarea>
+              <small>支持 {{friend}}、{{date}}、{{time}}、{{weekday}}</small>
+            </label>
+            <div class="two-columns">
+              <label class="field">
+                <span>每天执行时间</span>
+                <input id="schedule-time" name="scheduleTime" type="time" />
+              </label>
+              <label class="field">
+                <span>单次好友上限</span>
+                <input id="max-targets" name="maxTargetsPerRun" type="number" min="1" max="50" />
+              </label>
+            </div>
+            <label class="field">
+              <span>消息校验等待（秒）</span>
+              <input id="verification-timeout" name="verificationTimeout" type="number" min="5" max="30" />
+            </label>
+            <label class="switch-row">
+              <span>
+                <strong>启用每日定时</strong>
+                <small>只有实际发送同时开启时才会生效</small>
+              </span>
+              <input id="schedule-enabled" type="checkbox" />
+            </label>
+            <label class="switch-row danger-switch">
+              <span>
+                <strong>允许实际发送</strong>
+                <small>首次开启需要输入风险确认短语</small>
+              </span>
+              <input id="sending-enabled" type="checkbox" />
+            </label>
+            <button class="button primary wide" type="submit">保存规则</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="panel run-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">STEP 3 · VERIFY</p>
+            <h2>预览与运行</h2>
+          </div>
+          <div class="panel-actions">
+            <button id="preview-btn" class="button secondary">生成预览</button>
+            <button id="identity-check-btn" class="button secondary">安全核验</button>
+            <button id="execute-btn" class="button danger">运行一次</button>
+            <button id="stop-btn" class="button ghost">停止</button>
+          </div>
+        </div>
+        <p class="run-help">“安全核验”只打开并核对聊天标题，不输入、不发送；“已确认”只代表消息气泡出现，火花状态会单独记录。</p>
+        <div id="run-list" class="run-list">
+          <div class="empty-inline">暂无运行记录</div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="risk-dialog" class="modal">
+      <form method="dialog" id="risk-form">
+        <p class="eyebrow">FINAL SAFETY GATE</p>
+        <h2>确认开启实际发送</h2>
+        <p>这项功能可能违反平台规则并带来账号风险。请输入以下短语继续：</p>
+        <code>我理解账号风险</code>
+        <input id="risk-phrase" autocomplete="off" placeholder="输入确认短语" />
+        <div class="modal-actions">
+          <button value="cancel" class="button ghost">取消</button>
+          <button id="risk-confirm-btn" value="default" class="button danger">确认并保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="send-dialog" class="modal">
+      <form method="dialog" id="send-form">
+        <p class="eyebrow">MANUAL RUN</p>
+        <h2>现在运行一次？</h2>
+        <p>系统将向已选好友实际发送消息。出现不确定结果时不会自动重试。</p>
+        <div class="modal-actions">
+          <button value="cancel" class="button ghost">取消</button>
+          <button id="send-confirm-btn" value="default" class="button danger">确认发送</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
